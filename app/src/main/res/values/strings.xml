@@ -3,5 +3,7 @@
 
     <string name="app_name">Lollipop Exercise</string>
     <string name="title_activity_details">DetailsActivity</string>
+    <string name="snack_bar_test">Added a new Contact!</string>
+    <string name="undo_contact_add">Undo</string>
 
 </resources>

@@ -1,11 +1,15 @@
 package com.codepath.android.lollipopexercise.activities;
 
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.codepath.android.lollipopexercise.R;
 import com.codepath.android.lollipopexercise.adapters.ContactsAdapter;
@@ -18,6 +22,9 @@ public class ContactsActivity extends AppCompatActivity {
     private RecyclerView rvContacts;
     private ContactsAdapter mAdapter;
     private List<Contact> contacts;
+    private CoordinatorLayout rlMainContent;
+
+    Contact newContact;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +33,8 @@ public class ContactsActivity extends AppCompatActivity {
 
         // Find RecyclerView and bind to adapter
         rvContacts = (RecyclerView) findViewById(R.id.rvContacts);
+
+        rlMainContent = (CoordinatorLayout) findViewById(R.id.rlMainContent);
 
         // allows for optimizations
         rvContacts.setHasFixedSize(true);
@@ -54,12 +63,35 @@ public class ContactsActivity extends AppCompatActivity {
         return true;
     }
 
+    View.OnClickListener undoClickListener = new View.OnClickListener(){
+        @Override
+        public void onClick(View v){
+            if(newContact != null) {
+                contacts.remove(newContact);
+                newContact = null;
+                mAdapter.notifyItemRemoved(0);
+                rvContacts.scrollToPosition(0);
+            }
+        }
+    };
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+
+         newContact = Contact.getRandomContact(this);
+
+        contacts.add(0, newContact);
+        mAdapter.notifyItemInserted(0);
+        rvContacts.scrollToPosition(0);
+
+        Snackbar.make(rlMainContent, R.string.snack_bar_test, Snackbar.LENGTH_LONG)
+                .setAction(R.string.undo_contact_add, undoClickListener)
+                .setActionTextColor(ContextCompat.getColor(ContactsActivity.this, R.color.accent))
+                .show();
 
         return super.onOptionsItemSelected(item);
     }
